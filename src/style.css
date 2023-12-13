@@ -43,6 +43,10 @@ main{
     border-radius: 5px;
     width: calc(70% / 7);
     text-align: center;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     /*background-color: #c9eade;*/
 }
 #calendar-dates{
@@ -53,4 +57,10 @@ main{
 }
 .calendar-navigation span{
     cursor: pointer;
+}
+.event{
+    border: 1px grey solid;
+    border-radius: 5px;
+    font-size: 15px;
+    background-color: #1949bd;
 }

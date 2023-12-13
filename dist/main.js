@@ -8,7 +8,21 @@ const data = [
         ]
     },
     {
-        date: "12/11/2023",
+        date: "11/9/2023",
+        events: [
+            { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
+            { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
+        ]
+    },
+    {
+        date: "20/9/2023",
+        events: [
+            { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
+            { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
+        ]
+    },
+    {
+        date: "27/12/2023",
         events: [
             { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
             { starttime: 900, endtime: 1230, text: "9:00am to 12:30pm" },
@@ -30,11 +44,8 @@ const data = [
     }
 ];
 class Day {
-    constructor(fullDate, year, month, date, events) {
+    constructor(fullDate, events) {
         this.fullDate = fullDate;
-        this.year = year;
-        this.month = month;
-        this.date = date;
         this.events = events;
     }
 }
@@ -57,18 +68,20 @@ function getEventSet(data) {
         date.events.forEach(event => {
             eventsSet.push(new CalendarEvent(event.starttime, event.endtime, event.text));
         });
-        dateSet.push(new Day(fullDate, fullDate.getFullYear(), fullDate.getMonth() + 1, fullDate.getDate(), eventsSet));
+        dateSet.push(new Day(fullDate, eventsSet));
     });
     return dateSet;
 }
 function sortDateSet(dateSet) {
     return dateSet.sort((d1, d2) => d1.fullDate.getTime() - d2.fullDate.getTime());
 }
-const sortedDateSet = sortDateSet(getEventSet(data));
-function getRelevantDate(month, year) {
-    return sortedDateSet.filter((eachDay) => eachDay.month == month && eachDay.year == year);
+const dateSet = getEventSet(data);
+const sortedDateSet = sortDateSet(dateSet);
+function getRelevantDate(year, month, day) {
+    var _a;
+    return (_a = sortedDateSet.filter((eachDay) => eachDay.fullDate.getMonth() == month && eachDay.fullDate.getFullYear() == year
+        && eachDay.fullDate.getDate() == day)[0]) === null || _a === void 0 ? void 0 : _a.events;
 }
-console.log(getRelevantDate(11, 2023));
 let date = new Date();
 let year = date.getFullYear(); // 2023
 let month = date.getMonth(); // 11
@@ -82,20 +95,50 @@ const renderCalendar = () => {
     let lastDate = new Date(year, month + 1, 0).getDate(); // 31
     let dayEnd = new Date(year, month, lastDate).getDay(); // 0
     let previousMonthLastDate = new Date(year, month, 0).getDate(); // 30
-    let lit = "";
+    // let lit = ""
+    calendarDates.textContent = '';
     for (let i = dayOne; i > 0; i--) {
         let dateNo = previousMonthLastDate - i + 1;
-        lit += `<div id="${month - 1}-${dateNo}" class="day">${dateNo}</div>`;
+        let monthNo = month - 1;
+        let yearNo = year;
+        if (monthNo < 0) {
+            monthNo = 11;
+            yearNo = yearNo - 1;
+        }
+        createElement(yearNo, monthNo, dateNo);
+        // lit+=`<div id="${month-1}-${dateNo}" class="day">${dateNo}</div>`
     }
     for (let i = 1; i <= lastDate; i++) {
-        lit += `<div id="${month}-${i}" class="day">${i}</div>`;
+        createElement(year, month, i);
+        // lit+=`<div id="${month}-${i}" class="day">${i}</div>`
     }
     for (let i = dayEnd; i < 6; i++) {
-        lit += `<div id="" class="day">${i - dayEnd + 1}</div>`;
+        let dateNo = i - dayEnd + 1;
+        let monthNo = month + 1;
+        let yearNo = year;
+        if (monthNo > 11) {
+            monthNo = 0;
+            yearNo = yearNo + 1;
+        }
+        createElement(yearNo, monthNo, dateNo);
+        // lit+=`<div id="" class="day">${i - dayEnd + 1}</div>`
     }
     currentDate.innerHTML = `${months[month]} ${year}`;
-    calendarDates.innerHTML = lit;
+    // calendarDates.innerHTML = lit
 };
+function createElement(yearNo, monthNo, dateNo) {
+    const elm = document.createElement("div");
+    elm.classList.add("day");
+    let inner = `<div>${dateNo}</div>`;
+    const setOfEvents = getRelevantDate(yearNo, monthNo, dateNo);
+    if (setOfEvents) {
+        setOfEvents.forEach(event => {
+            inner += `<div class="event">${event.text}</div>`;
+        });
+    }
+    elm.innerHTML = inner;
+    calendarDates.append(elm);
+}
 renderCalendar();
 navigationIcons.forEach(icon => {
     icon.addEventListener("click", () => {
@@ -113,5 +156,4 @@ navigationIcons.forEach(icon => {
 });
 const dayElements = document.querySelectorAll(".day");
 dayElements.forEach(elm => {
-    console.log(elm.id);
 });

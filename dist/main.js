@@ -78,9 +78,8 @@ function sortDateSet(dateSet) {
 const dateSet = getEventSet(data);
 const sortedDateSet = sortDateSet(dateSet);
 function getRelevantDate(year, month, day) {
-    var _a;
-    return (_a = sortedDateSet.filter((eachDay) => eachDay.fullDate.getMonth() == month && eachDay.fullDate.getFullYear() == year
-        && eachDay.fullDate.getDate() == day)[0]) === null || _a === void 0 ? void 0 : _a.events;
+    return sortedDateSet.filter((eachDay) => eachDay.fullDate.getMonth() == month && eachDay.fullDate.getFullYear() == year
+        && eachDay.fullDate.getDate() == day);
 }
 let date = new Date();
 let year = date.getFullYear(); // 2023
@@ -127,10 +126,11 @@ const renderCalendar = () => {
     // calendarDates.innerHTML = lit
 };
 function createElement(yearNo, monthNo, dateNo) {
+    var _a;
     const elm = document.createElement("div");
     elm.classList.add("day");
     let inner = `<div>${dateNo}</div>`;
-    const setOfEvents = getRelevantDate(yearNo, monthNo, dateNo);
+    const setOfEvents = (_a = getRelevantDate(yearNo, monthNo, dateNo)[0]) === null || _a === void 0 ? void 0 : _a.events;
     if (setOfEvents) {
         setOfEvents.forEach(event => {
             inner += `<div class="event">${event.text}</div>`;
@@ -154,6 +154,9 @@ navigationIcons.forEach(icon => {
         renderCalendar();
     });
 });
-const dayElements = document.querySelectorAll(".day");
-dayElements.forEach(elm => {
-});
+function addEvent(date, events) {
+    const relevantDate = getRelevantDate(date.getFullYear(), date.getMonth(), date.getDate());
+    if (relevantDate)
+        console.log("found");
+}
+addEvent(new Date(2024, 4, 13), []);

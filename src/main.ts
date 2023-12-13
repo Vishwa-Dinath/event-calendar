@@ -88,7 +88,7 @@ const sortedDateSet = sortDateSet(dateSet)
 
 function getRelevantDate(year,month,day) {
     return sortedDateSet.filter((eachDay)=> eachDay.fullDate.getMonth()==month && eachDay.fullDate.getFullYear()==year
-                                    && eachDay.fullDate.getDate()==day)[0]?.events
+                                    && eachDay.fullDate.getDate()==day)
 }
 
 
@@ -148,7 +148,7 @@ function createElement(yearNo,monthNo,dateNo){
     const elm = document.createElement("div")
     elm.classList.add("day")
     let inner = `<div>${dateNo}</div>`
-    const setOfEvents = getRelevantDate(yearNo,monthNo,dateNo);
+    const setOfEvents = getRelevantDate(yearNo,monthNo,dateNo)[0]?.events;
     if (setOfEvents){
         setOfEvents.forEach(event=>{
             inner += `<div class="event">${event.text}</div>`
@@ -175,5 +175,15 @@ navigationIcons.forEach(icon=>{
     })
 })
 
+function addEvent(date:Date,startTime:number,endTime:number,text:string){
+    const relevantDate = getRelevantDate(date.getFullYear(),date.getMonth(),date.getDate());
+    const newEvent = new CalendarEvent(startTime,endTime,text)
+    if (relevantDate.length){
+        relevantDate[0]?.events.push(newEvent)
+    }else{
+        const events = [newEvent]
+        dateSet.push(new Day(date,events))
+    }
+}
 
 
